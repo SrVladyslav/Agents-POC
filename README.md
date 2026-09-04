@@ -225,3 +225,24 @@ This repository is a proof of concept for the agent/action architecture, not a p
 - **`ConversationModel` and `ParserModel` are not production implementations.** `src/simulation/` exists only to exercise this project's turn lifecycle without a real LLM. In production, `answer_user()` would call an actual model (an LLM provider SDK, LangChain, LlamaIndex, …) and `parse_data()` would run real extraction/NLU over the conversation. Both would also need real conversation *state*: [`ConversationState`](src/simulation/conversation_state.py) currently just holds `chat_id`/`history`/`last_user_message` in memory and is thrown away when the process exits — a real implementation would persist conversation history and any extracted-so-far fields in an actual database (e.g. Postgres, or a document store), not in a Python attribute.
 - **Deduplication is in-memory and per-process.** `BaseConversationalAgent._sent_payloads` lives only inside one agent instance's memory, for the lifetime of that process. It works for this PoC (one process, one conversation, one turn at a time) but would not survive a restart, would not be shared across multiple app instances behind a load balancer, and offers no way to inspect "what was already sent" from the outside. In production this state (and the conversation state above) would live in a shared store such as **Redis** or a database table, keyed by conversation/chat id.
 - **No server, no containerization.** There is currently no HTTP server exposing these agents (`main.py` is a local script demo), and no `Dockerfile`/`docker-compose` to run this as a deployable service. That's a deliberate simplification for the exercise, not a limitation of the architecture: because agents only depend on the `ConversationModel`/`ParserModel`/`HttpClient` protocols, wrapping `handle_turn()` behind an HTTP endpoint is a thin addition — a lightweight ASGI framework like **[Litestar](https://litestar.dev/)** (already a natural fit given `pydantic` is already a dependency) would let a `POST /conversations/{id}/turn` endpoint be added quickly, with the actual agent wiring unchanged, and then containerized with a standard `Dockerfile`.
+
+---
+
+## Logging
+
+Logging is configured once, centrally, via [`configure_logging()`](src/config/logging_config.py), called at the top of `main()` in [`src/main.py`](src/main.py). It sets the root logger's level based on `secrets.environment` (`APP_ENV`): `DEBUG` in `dev`, `INFO` in `staging`/`prod`.
+
+To log from any module, get a module-scoped logger the standard way:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+logger.info("Something happened: %s", details)
+logger.exception("Call to %s failed", url)  # inside an `except` block — includes the traceback
+```
+
+- Use `logger.exception(...)` (not `logger.error(...)`) inside an `except` block to capture the traceback automatically — see [`AssistanceRequestAction.execute`](src/actions/assistance_request_action.py) and [`DebtCommitmentAction.execute`](src/actions/debt_commitment_action.py) for the pattern.
+- [`SimulatedHttpClient`](src/integrations/http.py) logs the simulated request at `INFO` (method/URL) and `DEBUG` (headers/body).
+- Never call `configure_logging()` more than once per process, and never call it from a library module — only from an entrypoint (`main.py`, or a future server entrypoint).
