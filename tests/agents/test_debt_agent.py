@@ -60,3 +60,24 @@ def test_build_action_returns_none_when_commitment_date_has_wrong_format():
     raw_data = {"commitment_date": "15-09-2026", "committed_amount": 500.0}
 
     assert agent._build_action(raw_data) is None
+
+
+def test_build_action_returns_none_when_commitment_date_is_not_zero_padded():
+    agent = _build_agent()
+    raw_data = {"commitment_date": "2026-9-5", "committed_amount": 500.0}
+
+    assert agent._build_action(raw_data) is None
+
+
+def test_build_action_returns_none_when_commitment_date_has_two_digit_year():
+    agent = _build_agent()
+    raw_data = {"commitment_date": "26-09-15", "committed_amount": 500.0}
+
+    assert agent._build_action(raw_data) is None
+
+
+def test_build_action_returns_none_when_commitment_date_has_trailing_whitespace():
+    agent = _build_agent()
+    raw_data = {"commitment_date": "2026-09-15 ", "committed_amount": 500.0}
+
+    assert agent._build_action(raw_data) is None
