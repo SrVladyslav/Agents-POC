@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from src.protocols.conversations import ConversationModel
-from src.protocols.parsers import ParserModel
+
 from src.actions.base_action import BaseAction
+from src.protocols.conversations import ConversationModel
 from src.protocols.http_client import HttpClient
+from src.protocols.parsers import ParserModel
 
 
 class BaseConversationalAgent(ABC):

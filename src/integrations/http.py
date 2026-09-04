@@ -1,5 +1,6 @@
-from src.protocols.http_client import HttpClient
 import httpx
+
+from src.protocols.http_client import HttpClient
 
 
 class SimulatedHttpClient(HttpClient):

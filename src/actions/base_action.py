@@ -1,18 +1,19 @@
-from src.protocols.http_client import HttpClient
 from abc import ABC, abstractmethod
+
 from src.config import secrets
+from src.protocols.http_client import HttpClient
 
 
 class BaseAction(ABC):
     """Base class for all actions that can be performed by the agent."""
 
     # This payload is used for deduplication purposes and store the actual paylod
-    payload: dict[str, str]
+    payload: dict[str, str | bool | float | int]
 
     def __init__(self, parsed_data: dict[str, str]):
         self.payload = parsed_data
 
-    def _build_headers(self, parsed_data: dict[str, str]):
+    def _build_headers(self, parsed_data: dict[str, str]) -> dict[str, str]:
         """Builds the headers for the HTTP request.
 
         NOTE: We suppose that ALL the calls should have the Bearer Token authentication,

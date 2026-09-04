@@ -1,6 +1,5 @@
 from src.actions.base_action import BaseAction
 from src.config import secrets
-from src.integrations.http import SimulatedHttpClient
 from src.protocols.http_client import HttpClient
 
 
