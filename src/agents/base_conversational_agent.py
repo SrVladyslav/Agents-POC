@@ -34,8 +34,15 @@ class BaseConversationalAgent(ABC):
         self._sent_payloads: set[frozenset] = set()
 
     def handle_turn(self) -> str:
-        """
-        Reprsents an execution turn of the agent.
+        """Runs one execution turn of the agent.
+
+        Fetches the model's response, parses it into structured data,
+        builds the corresponding action (if any), and executes it through
+        the HTTP client unless an identical payload was already sent
+        earlier in this conversation.
+
+        Returns:
+            str: The conversational model's response for this turn.
         """
         # Obtain the response from the ConversationModel object
         # NOTE: answer_user() can get the last user msg from the history and call the LLM
@@ -69,7 +76,7 @@ class BaseConversationalAgent(ABC):
         checks if some action should be executed, if so, creates it and returns it.
 
         Args:
-            validated_data (dict[str, str]): Validated data to be used for building the action if should be executed.
+            raw_data (dict[str, str]): Parsed data to be validated and normalized.
 
         Returns:
             BaseAction | None: Action to be executed if any or None if no action is required.

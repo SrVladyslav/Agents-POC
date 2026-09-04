@@ -4,13 +4,20 @@ from src.protocols.http_client import HttpClient
 
 
 class DebtCommitmentAction(BaseAction):
-    """Action to commit a debt APi call with all the needed data."""
+    """Registers a user's debt commitment (date and amount), by posting it
+    to the debt commitment API.
+    """
 
     def __init__(self, commitment_data: dict[str, str]):
         super().__init__(commitment_data)
 
     def execute(self, http_client: HttpClient) -> None:
-        """Executes the action by sending the request to the respective API."""
+        """Builds the request headers/body from the parsed data and POSTs
+        them to `secrets.COMMITMENT_API_ENDPOINT`.
+
+        Args:
+            http_client (HttpClient): Client used to perform the HTTP call.
+        """
 
         http_client.post(
             url=secrets.COMMITMENT_API_ENDPOINT,

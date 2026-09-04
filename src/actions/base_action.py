@@ -16,8 +16,15 @@ class BaseAction(ABC):
     def _build_headers(self, parsed_data: dict[str, str]) -> dict[str, str]:
         """Builds the headers for the HTTP request.
 
-        NOTE: We suppose that ALL the calls should have the Bearer Token authentication,
-        as well as consider as headers all the other data that is returned by the ParserModel.
+        Every call is assumed to require Bearer Token authentication, plus
+        any other non-None field returned by the ParserModel, stringified.
+
+        Args:
+            parsed_data (dict[str, str]): Parsed data whose non-None values
+                are added as extra headers.
+
+        Returns:
+            dict[str, str]: Headers including the Authorization bearer token.
         """
 
         return {
@@ -31,9 +38,9 @@ class BaseAction(ABC):
 
     @abstractmethod
     def execute(self, http_client: HttpClient) -> None:
-        """Executes the action sending the respective request to the API.
+        """Sends the action's request to its target API.
 
-        NOTE: http_client can be deleted, but for extra purposes in the future
-        I prefer to keep it as optional too.
+        Args:
+            http_client (HttpClient): Client used to perform the HTTP call.
         """
         ...

@@ -34,6 +34,7 @@ class Secrets(BaseSettings):
 
 @lru_cache
 def get_secrets() -> Secrets:
+    """Returns the process-wide `Secrets` instance, loaded once and cached."""
     return Secrets()
 
 

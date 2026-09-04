@@ -4,8 +4,7 @@ from src.protocols.http_client import HttpClient
 
 
 class SimulatedHttpClient(HttpClient):
-    """
-    Simulated HTTPClient simulation
+    """Simulated HttpClient implementation.
 
     Constructs a real HTTP request (using httpx.Request) which validates
     the URL, headers, and body serialization, but never sends the request.
@@ -16,8 +15,18 @@ class SimulatedHttpClient(HttpClient):
     def post(
         self, url: str, headers: dict[str, str], body: dict[str, str]
     ) -> httpx.Response:
-        # httpx.request vaidates the URL, Normalizes the headers and serialzies the
-        # body to JON the same way as the API expects it.
+        """Builds and logs a POST request without sending it over the network.
+
+        Args:
+            url (str): Target endpoint URL.
+            headers (dict[str, str]): Request headers.
+            body (dict[str, str]): Request body, serialized to JSON.
+
+        Returns:
+            httpx.Response: A simulated 200 OK response.
+        """
+        # httpx.Request validates the URL, normalizes the headers, and serializes the
+        # body to JSON the same way as the API expects it.
         request = httpx.Request("POST", url=url, headers=headers, json=body)
 
         print(f"[SIMULATED HTTP CLIENT] {request.method} {request.url}")

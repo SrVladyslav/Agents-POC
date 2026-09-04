@@ -53,3 +53,10 @@ def test_build_action_returns_none_when_data_is_invalid():
     raw_data = {"commitment_date": "2026-09-15", "committed_amount": "not-a-number"}
 
     assert agent._build_action(raw_data) is None
+
+
+def test_build_action_returns_none_when_commitment_date_has_wrong_format():
+    agent = _build_agent()
+    raw_data = {"commitment_date": "15-09-2026", "committed_amount": 500.0}
+
+    assert agent._build_action(raw_data) is None
