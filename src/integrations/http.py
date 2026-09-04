@@ -1,6 +1,10 @@
+import logging
+
 import httpx
 
 from src.protocols.http_client import HttpClient
+
+logger = logging.getLogger(__name__)
 
 
 class SimulatedHttpClient(HttpClient):
@@ -29,9 +33,9 @@ class SimulatedHttpClient(HttpClient):
         # body to JSON the same way as the API expects it.
         request = httpx.Request("POST", url=url, headers=headers, json=body)
 
-        print(f"[SIMULATED HTTP CLIENT] {request.method} {request.url}")
-        print(f"  headers: {dict(request.headers)}")
-        print(f"  body: {request.content.decode()}")
+        logger.info("[SIMULATED HTTP CLIENT] %s %s", request.method, request.url)
+        logger.debug("  headers: %s", dict(request.headers))
+        logger.debug("  body: %s", request.content.decode())
 
         # Nothing is sent over the internet, we assume that the response is 200 OK
         return httpx.Response(status_code=200, json={"status": "ok"})

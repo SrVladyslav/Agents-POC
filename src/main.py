@@ -1,5 +1,6 @@
 from src.agents.assistance_agent import AssistanceAgent
 from src.agents.debt_agent import DebtAgent
+from src.config import configure_logging
 from src.integrations.http import SimulatedHttpClient
 from src.simulation.simulated_assistance_parser_model import (
     SimulatedAssistanceParserModel,
@@ -12,6 +13,8 @@ def main() -> None:
     """Runs one conversation turn for each agent, using simulated models
     and a simulated HTTP client, as a demo of the full turn lifecycle.
     """
+    configure_logging()
+
     http_client = SimulatedHttpClient()
 
     debt_chat_id = "debt-demo-chat"
